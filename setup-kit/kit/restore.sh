@@ -41,12 +41,12 @@ for f in client_secret.json token.json webhook.json config.json; do
   chmod 600 "$H/$f" "$B/$f" 2>/dev/null
 done
 [ -s "$H/config.json" ] || cp "$H/config.example.json" "$H/config.json"
-for f in client_secret.json token.json webhook.json; do [ -s "$H/$f" ] || warn "missing $f (setup step not done yet)"; done
+for f in client_secret.json token.json; do [ -s "$H/$f" ] || warn "missing $f (setup step not done yet)"; done
 
 # 4) start the watcher daemon (it does a catch-up check immediately if inside active hours)
 if [ -s "$H/token.json" ] && [ -s "$H/webhook.json" ]; then
   out=$(HEALTH_DIR="$H" "$H/start_watch.sh" 2>&1) || warn "$out"
   say "$out"
 fi
-say "health kit ok: venv $("$H/.venv/bin/python" -V 2>&1), watcher pid $(pgrep -f "$H/watch.py" | head -1)"
+say "health kit ok: venv $("$H/.venv/bin/python" -V 2>&1), watcher pid $(pgrep -f "$H/watch.py" | head -1 || echo none)"
 exit 0
