@@ -39,8 +39,8 @@ SCOPES = [P + s + ".readonly" for s in
 # settings.readonly is needed only for /pairedDevices (lastSyncTime). Requested on the
 # next `auth`; refresh keeps whatever scopes the saved token already has.
 AUTH_SCOPES = SCOPES + [P + "settings.readonly"]
-TZ = ZoneInfo(CFG.get("timezone", "Asia/Singapore"))
-TZ_LABEL = f"{CFG.get('timezone', 'Asia/Singapore')}"
+TZ = ZoneInfo(CFG.get("timezone", "UTC"))
+TZ_LABEL = f"{CFG.get('timezone', 'UTC')}"
 
 
 def save(creds):

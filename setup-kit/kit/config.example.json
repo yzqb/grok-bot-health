@@ -1,11 +1,7 @@
 {
-  "timezone": "Asia/Singapore",
-  "active_start_hour": 9,
-  "active_end_hour": 22,
-  "interval_minutes": 30,
+  "timezone": "UTC",
   "window_minutes": 60,
   "threshold_steps": 250,
   "stale_minutes": 30,
-  "remind_gap_minutes": 55,
   "oauth_port": 8765
 }

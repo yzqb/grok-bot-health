@@ -1,10 +1,11 @@
 #!/bin/bash
 # Grok Bot Health kit: restore everything after a box reset / automatic update. Idempotent, safe to run any time.
-#   restore.sh           -> fix what is missing, start the watcher, print a short status
+#   restore.sh           -> fix what is missing, print a short status
 #   restore.sh --quiet   -> same, prints only problems (use this on every wake-up)
 # What a box reset does: running processes and system installs (/usr, apt packages, /tmp) are gone;
 # files under /home/box stay. So: code + venv + secrets live in $H, a second copy of the secrets lives in $B,
-# and this script rebuilds the venv if the system Python changed, then restarts the watcher daemon.
+# and this script rebuilds the venv if the system Python changed and restores missing secrets.
+# It starts no background process: the box is paused when idle, so timed checks must be the bot's own routines.
 H="${HEALTH_DIR:-/home/box/health}"
 B="${HEALTH_BACKUP_DIR:-/home/box/.health-backup}"
 Q=0; [ "$1" = "--quiet" ] && Q=1
@@ -34,7 +35,7 @@ fi
 
 # 3) secrets/config: live copy <-> backup copy (only valid, non-empty JSON is ever copied)
 valid() { [ -s "$1" ] && python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$1" 2>/dev/null; }
-for f in client_secret.json token.json webhook.json config.json; do
+for f in client_secret.json token.json config.json; do
   if valid "$H/$f"; then cp -p "$H/$f" "$B/$f"
   elif valid "$B/$f"; then cp -p "$B/$f" "$H/$f"; say "restored $f from backup"
   fi
@@ -43,10 +44,5 @@ done
 [ -s "$H/config.json" ] || cp "$H/config.example.json" "$H/config.json"
 for f in client_secret.json token.json; do [ -s "$H/$f" ] || warn "missing $f (setup step not done yet)"; done
 
-# 4) start the watcher daemon (it does a catch-up check immediately if inside active hours)
-if [ -s "$H/token.json" ] && [ -s "$H/webhook.json" ]; then
-  out=$(HEALTH_DIR="$H" "$H/start_watch.sh" 2>&1) || warn "$out"
-  say "$out"
-fi
-say "health kit ok: venv $("$H/.venv/bin/python" -V 2>&1), watcher pid $(pgrep -f "$H/watch.py" | head -1 || echo none)"
+say "health kit ok: venv $("$H/.venv/bin/python" -V 2>&1)"
 exit 0
