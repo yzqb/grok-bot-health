@@ -11,7 +11,7 @@
 ## 前提（开工前先问本人确认）
 1. 手环数据已经同步到 Google Health：手机上装好了 **Google Health app**，用要授权的那个 Google 账号登录，并完成了 Fitbit 账号迁移，app 里能看到今天的步数。旧的 Fitbit Web API 将在 2026-11-02 关闭，只能走 Google Health 这条路。
 2. 本人已经有 Google 账号和 GitHub 账号。
-3. 问清本人所在的时区，以及每天几点到几点需要提醒（默认 Asia/Singapore，9:00–22:00），稍后写进 `config.json`。
+3. 时区不要问本人：直接用你自己已知的本人时区（你的系统提示/Time 部分给出的 IANA 时区，如 `America/New_York`；盒子的 `date +%Z` 或 `/etc/timezone` 也可参考）。提醒时段默认 9:00–22:00，除非本人主动说了别的。稍后写进 `config.json`。
 
 ## 第 0 步：在你自己的浏览器里让本人登录
 1. **Google**：用 computerUse 浏览器打开 `https://accounts.google.com/`，然后调用 `request_box_help` 把屏幕交给本人。本人自己输入账号、密码和两步验证，并勾选“保持登录”。登录后，在同一个浏览器里打开 `https://console.cloud.google.com/`，确认已经是登录状态。如果弹出服务条款，请本人勾选同意，国家选自己所在地。**不需要绑定结算账户。**
@@ -26,7 +26,7 @@
 cd /home/box && unzip -o <kit压缩包路径> -d /home/box/health-kit-src
 bash /home/box/health-kit-src/kit/install.sh      # 安装到 /home/box/health 并建好 venv；已有的凭证不会被覆盖
 ```
-然后编辑 `/home/box/health/config.json`，填入本人的时区和提醒时段。
+然后编辑 `/home/box/health/config.json`：`timezone` 填第 0 步确定的本人 IANA 时区（不要保留示例里的 Asia/Singapore，除非本人确实在那里），提醒时段默认 9–22。
 
 ## 第 2 步：GitHub Pages（OAuth 同意屏幕需要应用首页和隐私政策页）
 ```bash
